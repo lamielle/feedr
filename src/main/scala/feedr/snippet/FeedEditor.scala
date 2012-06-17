@@ -33,7 +33,7 @@ class FeedEditor {
     def apply(in: Any): JsCmd =
       SetHtml("json_result", in match {
         case JsonCmd("processForm", _, params: Map[String, Any], _) =>
-          <div> Processed! </div>
+          <div>Processed!</div>
         case x =>
           <span class="error">Unknown issue handling JSON: {x}</span>
       })
