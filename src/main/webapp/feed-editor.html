@@ -3,9 +3,16 @@
       <div class="lift:FeedEditor.head"/>
    </head>
 
-   Description: <input type="text" name="description"/><br/>
-   Applications:
-   <ol id="applications-list">
-      <label id="add-application" class="lift:FeedEditor.renderAddApplication">Add Application</label>
-   </ol>
+   <label for="description">Description: </label><input type="text" name="description" id="feed-description"/><br/>
+   <div id="applications">
+      <span>
+         <span>Applications:</span>
+         <input type="button"
+                id="add-application"
+                class="lift:FeedEditor.renderAddApplication"
+                value="Add Application"/>
+      </span>
+      <ol id="applications-list">
+      </ol>
+   </div>
 </div>

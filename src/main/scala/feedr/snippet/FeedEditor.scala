@@ -21,6 +21,8 @@ class FeedEditor {
   def render =
     "#feed-editor" #> ((ns: NodeSeq) => SHtml.jsonForm(processFeed, ns))
 
+  // Render the add-application button:
+  // When it is clicked, embed a new application editor snippet
   def renderAddApplication =
     "#add-application [onclick]" #> SHtml.ajaxInvoke(() =>
       AppendHtml("applications-list",
