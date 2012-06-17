@@ -2,16 +2,11 @@ package feedr.snippet
 
 import net.liftweb._
 import http._
+import js.jquery.JqJsCmds.AppendHtml
 import js.JsCmds.{SetHtml, Script}
-import util._
-
-import feedr.lib.FeedManager
 
 import _root_.net.liftweb.http._
-import _root_.net.liftweb.json
-import SHtml._
 import js._
-import js.jquery.JqJsCmds.AppendHtml
 import net.liftweb.util._
 import Helpers._
 import xml.NodeSeq
@@ -24,10 +19,12 @@ class FeedEditor {
 
   // Render the feed editor
   def render =
+    "#feed-editor" #> ((ns: NodeSeq) => SHtml.jsonForm(processFeed, ns))
+
+  def renderAddApplication =
     "#add-application [onclick]" #> SHtml.ajaxInvoke(() =>
       AppendHtml("applications-list",
           <div class="lift:embed?what=application-editor"/>))
-    //"#feed-editor" #> ((ns: NodeSeq) => SHtml.jsonForm(processFeed, ns))
 
   // Process feed editor submission
   object processFeed extends JsonHandler {
