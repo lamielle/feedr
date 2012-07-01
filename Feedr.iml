@@ -9,10 +9,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/src/main/scala" />
-          <root url="file://$MODULE_DIR$/src/main/resources" />
-        </sourceRoots>
       </configuration>
     </facet>
     <facet type="scala" name="Scala">
@@ -61,6 +57,7 @@
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:0.9.26" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: junit:junit:4.7" level="project" />
+    <orderEntry type="library" scope="TEST" name="Maven: org.scalatest:scalatest_2.9.1:1.8" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scala-tools.testing:specs_2.9.1:1.6.9" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty:6.1.25" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.mortbay.jetty:jetty-util:6.1.25" level="project" />

@@ -17,6 +17,10 @@ class FeedEditor {
   // rendered page
   def head = Script(processFeed.jsCmd)
 
+  def redirectTest =
+    "#redirect [onclick]" #> SHtml.ajaxInvoke(() =>
+      S.redirectTo("/static/index"))
+
   // Render the feed editor
   def render =
     "#feed-editor" #> ((ns: NodeSeq) => SHtml.jsonForm(processFeed, ns))
