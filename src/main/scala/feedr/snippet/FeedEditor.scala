@@ -25,6 +25,9 @@ class FeedEditor {
   def render =
     "#feed-editor" #> ((ns: NodeSeq) => SHtml.jsonForm(processFeed, ns))
 
+  def renderFeedName =
+    "#feed-name" #> <span>{S.param("feedId").getOrElse("Invalid Feed")}</span>
+
   // Render the add-application button:
   // When it is clicked, embed a new application editor snippet
   def renderAddApplication =

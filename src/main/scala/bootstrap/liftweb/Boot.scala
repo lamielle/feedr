@@ -8,7 +8,6 @@ import _root_.net.liftweb.sitemap._
 import _root_.net.liftweb.sitemap.Loc._
 import _root_.net.liftweb.mapper.{DB, DefaultConnectionIdentifier, StandardDBVendor}
 
-
 /**
  * A class that's instantiated early and run.  It allows the application
  * to modify lift's environment
@@ -29,6 +28,7 @@ class Boot {
 
     // where to search snippet
     LiftRules.addToPackages("feedr")
+
     // Build SiteMap
     def sitemap() = SiteMap(
       // Menu with special Link
@@ -48,6 +48,16 @@ class Boot {
       Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
     LiftRules.early.append(makeUtf8)
+
+    LiftRules.statelessRewrite.prepend(NamedPF("FeedEditorRewrite") {
+      case RewriteRequest(ParsePath(feedId :: Nil, _, _, _), _, _) =>
+        feedId match {
+        case "index" => RewriteResponse("index" :: Nil, true)
+        case _ => RewriteResponse(
+          ParsePath("feed-editor" :: Nil, "", false, false), Map("feedId" -> feedId), true // Use webapp/feed-editor.html
+        )
+      }
+    })
 
     S.addAround(DB.buildLoanWrapper())
   }

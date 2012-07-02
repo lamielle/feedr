@@ -15,6 +15,7 @@
       <configuration>
         <option name="compilerLibraryLevel" value="Project" />
         <option name="compilerLibraryName" value="Maven: org.scala-lang:scala-compiler-bundle:2.9.1" />
+        <option name="fsc" value="true" />
         <option name="maximumHeapSize" value="1024" />
         <option name="vmOptions" value="-DpackageLinkDefs=file:///Users/lamielle/work/vmware/feedr/target/packageLinkDefs.properties" />
       </configuration>

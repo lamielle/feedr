@@ -1,16 +1,7 @@
 package feedr.model
 
-import java.util.UUID
+case class Feed(id: String, applications: List[Application] = List[Application]())
 
-class Feed(id: String,
-           applications: List[Application]) {
-}
-
-class Application(id: UUID,
-                  version: String,
-                  description: String) {
-  //id = UUID.randomUUID()
-  //version = ""
-  //description = ""
-}
-
+case class Application(name: String,
+                       version: String,
+                       description: String)
