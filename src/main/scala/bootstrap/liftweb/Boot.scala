@@ -52,10 +52,17 @@ class Boot {
     LiftRules.statelessRewrite.prepend(NamedPF("FeedEditorRewrite") {
       case RewriteRequest(ParsePath(feedId :: Nil, _, _, _), _, _) =>
         feedId match {
-        case "index" => RewriteResponse("index" :: Nil, true)
-        case "favicon" => RewriteResponse("favicon" :: Nil, true)
-        case _ => RewriteResponse(
-          ParsePath("feed-editor" :: Nil, "", false, false), Map("feedId" -> feedId), true // Use webapp/feed-editor.html
+          // Must explicitly tell Lift to stop rewriting URLs so we don't recurse
+          // infinitely.  Do this by passing true for the last parameter of
+          // RewriteResponse.
+
+          // index and favicon are not consider feeds
+          case "index" => RewriteResponse("index" :: Nil, true)
+          case "favicon" => RewriteResponse("favicon" :: Nil, true)
+
+          // All other URLs are considered feed IDs and redirect to the feed editor
+          case _ => RewriteResponse(
+            ParsePath("feed-editor" :: Nil, "", false, false), Map("feedId" -> feedId), true // Use webapp/feed-editor.html
         )
       }
     })
