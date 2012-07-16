@@ -53,6 +53,7 @@ class Boot {
       case RewriteRequest(ParsePath(feedId :: Nil, _, _, _), _, _) =>
         feedId match {
         case "index" => RewriteResponse("index" :: Nil, true)
+        case "favicon" => RewriteResponse("favicon" :: Nil, true)
         case _ => RewriteResponse(
           ParsePath("feed-editor" :: Nil, "", false, false), Map("feedId" -> feedId), true // Use webapp/feed-editor.html
         )

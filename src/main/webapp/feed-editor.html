@@ -1,29 +1,19 @@
 <div class="lift:surround?with=default;at=content">
-<div id="feed-editor" class="lift:FeedEditor">
-   <head>
-      <div class="lift:FeedEditor.head"/>
-   </head>
+   <div id="feed-editor" class="lift:FeedEditorInserter">
+      <span>Feed name: <span id="feed-name"></span></span>
 
-   <div id="feed-name" class="lift:FeedEditor.renderFeedName">Boom</div>
+      <h2>Feed Editor:</h2>
 
-   <h2>Feed Editor:</h2>
-
-   <label for="description">Description: </label><input type="text" name="feed-description" id="feed-description"/><br/>
-   <div id="applications">
+      <label for="description">Description: </label><input type="text" name="feed-description" id="feed-description"/><br/>
+      <div id="applications">
       <span>
          <span>Applications:</span>
          <input type="button"
                 id="add-application"
-                class="lift:FeedEditor.renderAddApplication"
                 value="Add Application"/>
       </span>
-      <ol id="applications-list">
-      </ol>
+         <ol id="applications-list">
+         </ol>
+      </div>
    </div>
-
-   <input type="submit"
-          name="submit-feed"
-          id="submit-feed"
-          value="Submit Feed"/>
-</div>
 </div>
