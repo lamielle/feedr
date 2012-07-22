@@ -4,6 +4,7 @@ import org.scalatest.FlatSpec
 import org.scalatest.matchers.ShouldMatchers
 
 class FeedManagerSpec extends FlatSpec with ShouldMatchers {
+/*
   "shortestUniqueString" should "handle both empty inputs" in {
     FeedsManager.shortestUniqueString("", Set()) should equal (None)
   }
@@ -28,4 +29,5 @@ class FeedManagerSpec extends FlatSpec with ShouldMatchers {
     //FeedsManager$.shortestUniqueString("7f2a4745-5d02-4ec3-98cc-c8b964c97c3f", Set("e", "34", "4", "9", "4f", "d6", "2", "7")) should equal (Some("7f"))
     //FeedsManager$.shortestUniqueString("7f2a4745-5d02-4ec3-98cc-c8b964c97c3f", Set("e", "34", "4", "9", "4f", "d6", "c1", "6", "1", "39", "b", "0", "2", "0a", "c", "30", "7", "3", "d")) should equal (Some("7f"))
   }
+*/
 }

@@ -1,10 +1,10 @@
 <div class="lift:surround?with=default;at=content">
    <div id="feed-editor" class="lift:FeedEditorInserter">
-      <span>Feed name: <span id="feed-name"></span></span>
+      <span>Feed id: <span id="feed-id"></span></span>
 
       <h2>Feed Editor:</h2>
 
-      <label for="description">Description: </label><input type="text" name="feed-description" id="feed-description"/><br/>
+      <label for="description">Description: </label><input type="text" id="feed-description"/><br/>
       <div id="applications">
       <span>
          <span>Applications:</span>
@@ -12,8 +12,9 @@
                 id="add-application"
                 value="Add Application"/>
       </span>
-         <ol id="applications-list">
-         </ol>
+         <ul id="applications-list">
+            <li id="applications-list-items"></li>
+         </ul>
       </div>
    </div>
 </div>

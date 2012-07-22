@@ -1,10 +1,9 @@
 package feedr.snippet
 
-import _root_.net.liftweb.http._
-import net.liftweb.util._
-import Helpers._
+import net.liftweb.util.Helpers._
 import feedr.lib.FeedsManager
 import feedr.lib.FeedsManager.NewFeed
+import net.liftweb.http.{S, SHtml}
 
 class FeedrMain {
   def renderNewFeedButton =
