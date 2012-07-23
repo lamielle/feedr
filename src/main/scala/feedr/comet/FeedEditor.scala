@@ -37,6 +37,7 @@ class FeedEditor extends CometActor with Logger {
     "#add-application [onclick]" #> SHtml.ajaxInvoke(() =>
       AppendHtml("applications-list",
           <div class="lift:embed?what=application-editor"/>)) &
+    // Render the list of applications
     "#applications-list-items" #> renderApplications(mFeed)
 
   override def lowPriority = {
