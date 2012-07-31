@@ -1,13 +1,14 @@
 package feedr.comet
 
 import net.liftweb.common.{Logger, Box, Empty, Full}
-import net.liftweb.http.{Templates, SHtml, CometActor}
+import net.liftweb.http.{RemoveAListener, Templates, SHtml, CometActor, AddAListener}
+import net.liftweb.http.js.jquery.JqJsCmds.PrependHtml
 
 import feedr.lib.{FeedManager, FeedsManager}
 import xml.NodeSeq
 import feedr.model.Feed
 import feedr.comet.FeedEditor.UseFeed
-import feedr.lib.FeedManager.{NewApplication, RequestFeed}
+import feedr.lib.FeedManager.{ApplicationAdded, NewApplication, RequestFeed}
 import feedr.lib.FeedsManager.RequestFeedManager
 import feedr.model.Application
 import net.liftweb.http.js.JsCmds
@@ -42,6 +43,15 @@ class FeedEditor extends CometActor with Logger {
         case _ => InitForFeed(feedId)
       }
     }
+    // Render the newly added application and update our copy of the feed state
+    case ApplicationAdded(application: Application, feed: Feed) => {
+      debug("Message received: FeedEditor(%s)::ApplicationAdded(%s)".format(name, application))
+      mFeed = Full(feed)
+      partialUpdate(PrependHtml("applications-list",
+        RenderApplication(application).apply(
+          Templates("application-editor" :: Nil).getOrElse(<div/>)))
+      )
+    }
     case error => {
       debug("Message received: FeedEditor(%s): Unknown message type: %s".format(name, error))
       reply("Error: %s".format(error))
@@ -50,7 +60,7 @@ class FeedEditor extends CometActor with Logger {
 
   private def OnClickAddApplication() {
     mFeedManager match {
-      case Full(feedManager) => {
+      case Full(feedManager: FeedManager) => {
         feedManager ! NewApplication()
         JsCmds.Noop
       }
@@ -67,7 +77,10 @@ class FeedEditor extends CometActor with Logger {
       // the matching fails due to type erasure.
       case Full(feedManagerBox: Box[FeedManager]) => {
         mFeedManager = feedManagerBox
-        for {feedManager <- mFeedManager} RequestFeedFromManager(feedManager)
+        for {feedManager <- mFeedManager} {
+          feedManager ! AddAListener(this)
+          RequestFeedFromManager(feedManager)
+        }
       }
       case m => debug("Unknown reply from FeedsManager for feed manager: %s".format(m))
     }
@@ -80,20 +93,11 @@ class FeedEditor extends CometActor with Logger {
       // the matching fails due to type erasure.
       case Full(Full(feed: Feed)) => {
         mFeed = Full(feed)
-        // XXX: Use a few hardcoded feeds/applications for now until editing is done
-        mFeed = Full(Feed("iD!", Application("App1", "1.0", "blargh desc") ::
-          Application("App1", "2.0", "boom") :: Nil))
         reRender()
       }
       case m => debug("Unknown reply from FeedManager(%s) for feed: %s".format(name, m))
     }
   }
-
-  /*
-  // Do something similar with partial update when a new app is added
-  AppendHtml("applications-list",
-      <div class="lift:embed?what=application-editor"/>)
-  */
 
   // Return a function that can render the given application.
   private def RenderApplication(app: Application) =
@@ -114,4 +118,8 @@ class FeedEditor extends CometActor with Logger {
       // No feed available yet.
       case _ => <div/>
     }
+
+  override def localShutdown() {
+    for (feedManager <- mFeedManager) feedManager ! RemoveAListener(this)
+  }
 }
