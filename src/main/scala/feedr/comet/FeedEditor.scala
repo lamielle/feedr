@@ -6,11 +6,12 @@ import net.liftweb.common.{Logger, Box, Empty, Full}
 import net.liftweb.http.{RemoveAListener, Templates, SHtml, CometActor, AddAListener}
 import net.liftweb.http.js.jquery.JqJsCmds.PrependHtml
 import net.liftweb.http.js.JsCmds
+import net.liftweb.http.js.JsCmds.SetValById
 
 import feedr.lib.{FeedManager, FeedsManager}
 import feedr.model.Feed
 import feedr.comet.FeedEditor.UseFeed
-import feedr.lib.FeedManager.{ApplicationAdded, NewApplication, RequestFeed}
+import feedr.lib.FeedManager.{ApplicationNameEdited, EditApplicationName, ApplicationAdded, NewApplication, RequestFeed}
 import feedr.lib.FeedsManager.RequestFeedManager
 import feedr.model.Application
 
@@ -47,12 +48,19 @@ class FeedEditor extends CometActor with Logger {
       }
       // Render the newly added application and update our copy of the feed state
       case ApplicationAdded(application: Application, feed: Feed) => {
-         debug("Message received: FeedEditor(%s)::ApplicationAdded(%s)".format(name, application))
+         debug("Message received: FeedEditor(%s)::ApplicationAdded(%s, %s)".format(name, application, feed))
          mFeed = Full(feed)
          partialUpdate(PrependHtml("applications-list",
             RenderApplication(application).apply(
                Templates("application-editor" :: Nil).getOrElse(<div/>)))
          )
+      }
+      case ApplicationNameEdited(application: Application, feed: Feed) => {
+         debug("Message received: FeedEditor(%s)::ApplicationNameEdited(%s, %s)".format(name, application, feed))
+         mFeed = Full(feed)
+         partialUpdate(SetValById("application-name-%s".format(application.id),
+            application.name
+         ))
       }
       case error => {
          debug("Message received: FeedEditor(%s): Unknown message type: %s".format(name, error))
@@ -60,7 +68,8 @@ class FeedEditor extends CometActor with Logger {
       }
    }
 
-   private def OnClickAddApplication() {
+   // Handler for when add application is clicked.
+   private def OnClickAddApplication() =
       mFeedManager match {
          case Full(feedManager: FeedManager) => {
             feedManager ! NewApplication()
@@ -68,7 +77,16 @@ class FeedEditor extends CometActor with Logger {
          }
          case _ => JsCmds.Noop
       }
-   }
+
+   // Handler when an application name field loses focus.
+   private def OnBlurApplicationName(appId: String, value: String) =
+      mFeedManager match {
+         case Full(feedManager: FeedManager) => {
+            feedManager ! EditApplicationName(appId, value)
+            JsCmds.Noop
+         }
+         case _ => JsCmds.Noop
+      }
 
    // Initialize this feed editor comet actor to use the feed with the given id.
    private def InitForFeed(feedId: String) {
@@ -103,9 +121,11 @@ class FeedEditor extends CometActor with Logger {
 
    // Return a function that can render the given application.
    private def RenderApplication(app: Application) =
-      "#application-name [value]" #> app.name &
+      "#application-name [id]" #> "application-name-%s".format(app.id) &
+         "#application-name [value]" #> app.name &
          "#application-description [value]" #> app.description &
-         "#application-version [value]" #> app.version
+         "#application-version [value]" #> app.version &
+         "#application-name [onblur]" #> SHtml.onEvent(s => OnBlurApplicationName(app.id, s))
 
    // Render each application in the given feed.
    private def RenderApplications(feed: Box[Feed]): Seq[NodeSeq] =
@@ -114,7 +134,7 @@ class FeedEditor extends CometActor with Logger {
          case Full(currFeed) =>
             currFeed.applications.map {
                currApp: Application =>
-                  RenderApplication(currApp).apply(
+                  RenderApplication(currApp)(
                      Templates("application-editor" :: Nil).getOrElse(<div/>))
             }
          // No feed available yet.
