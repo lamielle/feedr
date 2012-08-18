@@ -2,18 +2,23 @@ package feedr.comet
 
 import xml.NodeSeq
 
-import net.liftweb.common.{Logger, Box, Empty, Full}
-import net.liftweb.http.{RemoveAListener, Templates, SHtml, CometActor, AddAListener}
+import net.liftweb.common.{Logger, Box, Empty}
+import net.liftweb.common.Full
+import net.liftweb.http.{Templates, SHtml, CometActor, AddAListener}
 import net.liftweb.http.js.jquery.JqJsCmds.PrependHtml
 import net.liftweb.http.js.JsCmds
+import net.liftweb.http.RemoveAListener
 import net.liftweb.http.js.JsCmds.SetValById
+import net.liftweb.util.CssSel
+
+import org.scalastuff.scalabeans.Preamble._
+import org.scalastuff.scalabeans.PropertyDescriptor
 
 import feedr.lib.{FeedManager, FeedsManager}
-import feedr.model.Feed
-import feedr.comet.FeedEditor.UseFeed
-import feedr.lib.FeedManager.{ApplicationNameEdited, EditApplicationName, ApplicationAdded, NewApplication, RequestFeed}
+import feedr.model.{Editable, Application, Feed}
+import feedr.lib.FeedManager.{ApplicationEdited, EditApplication, NewApplication, ApplicationAdded, RequestFeed}
 import feedr.lib.FeedsManager.RequestFeedManager
-import feedr.model.Application
+import feedr.comet.FeedEditor.UseFeed
 
 object FeedEditor {
    case class UseFeed(feedId: String)
@@ -55,11 +60,12 @@ class FeedEditor extends CometActor with Logger {
                Templates("application-editor" :: Nil).getOrElse(<div/>)))
          )
       }
-      case ApplicationNameEdited(application: Application, feed: Feed) => {
+      case ApplicationEdited(application: Application, property: PropertyDescriptor, feed: Feed) => {
          debug("Message received: FeedEditor(%s)::ApplicationNameEdited(%s, %s)".format(name, application, feed))
          mFeed = Full(feed)
-         partialUpdate(SetValById("application-name-%s".format(application.id),
-            application.name
+         val updatedValueEditable = descriptorOf[Application].get(application, property.name).asInstanceOf[Editable[String]]
+         partialUpdate(SetValById("application-%s-%s".format(property.name, application.id),
+            updatedValueEditable.value.toString
          ))
       }
       case error => {
@@ -67,26 +73,6 @@ class FeedEditor extends CometActor with Logger {
          reply("Error: %s".format(error))
       }
    }
-
-   // Handler for when add application is clicked.
-   private def OnClickAddApplication() =
-      mFeedManager match {
-         case Full(feedManager: FeedManager) => {
-            feedManager ! NewApplication()
-            JsCmds.Noop
-         }
-         case _ => JsCmds.Noop
-      }
-
-   // Handler when an application name field loses focus.
-   private def OnBlurApplicationName(appId: String, value: String) =
-      mFeedManager match {
-         case Full(feedManager: FeedManager) => {
-            feedManager ! EditApplicationName(appId, value)
-            JsCmds.Noop
-         }
-         case _ => JsCmds.Noop
-      }
 
    // Initialize this feed editor comet actor to use the feed with the given id.
    private def InitForFeed(feedId: String) {
@@ -119,13 +105,73 @@ class FeedEditor extends CometActor with Logger {
       }
    }
 
+   // Handler for when add application is clicked.
+   private def OnClickAddApplication() =
+      mFeedManager match {
+         case Full(feedManager: FeedManager) => {
+            feedManager ! NewApplication()
+            JsCmds.Noop
+         }
+         case _ => JsCmds.Noop
+      }
+
+   // Handler when an application field loses focus.
+   private def OnBlurApplicationField(appId: String, property: PropertyDescriptor, value: String) =
+      mFeedManager match {
+         case Full(feedManager: FeedManager) => {
+            feedManager ! EditApplication(appId, property, value)
+            JsCmds.Noop
+         }
+         case _ => JsCmds.Noop
+      }
+
+   // Generates a css selector that defines the id property for each editable
+   // field of the given application.
+   private def IDSelectors(app: Application): CssSel =
+      descriptorOf[Application].properties.filter {
+         property: PropertyDescriptor =>
+            property.scalaType.equals(
+            descriptorOf[Editable[String]].beanType)
+      } map {
+         property: PropertyDescriptor =>
+            "#application-%s [id]".format(property.name) #> "application-%s-%s".format(property.name, app.id)
+      } reduce {
+         (sel1: CssSel, sel2: CssSel) => sel1 & sel2
+      }
+
+   // Generate a css selector that inserts the values of each editable field of
+   // the given application in the proper field in the DOM.
+   private def ValueSelectors(app: Application): CssSel =
+      descriptorOf[Application].properties.filter {
+         property: PropertyDescriptor =>
+            property.scalaType.equals(
+               descriptorOf[Editable[String]].beanType)
+      } map {
+         property: PropertyDescriptor =>
+            "#application-%s [value]".format(property.name) #>
+               descriptorOf[Application].get(app, property.name).asInstanceOf[Editable[String]].value
+      } reduce {
+         (sel1: CssSel, sel2: CssSel) => sel1 & sel2
+      }
+
+   // Generates selectors for editable fields of Application that send a
+   // message to the FeedManager that the field has been edited.
+   private def OnBlurSelectors(app: Application): CssSel =
+      descriptorOf[Application].properties.filter {
+         property: PropertyDescriptor =>
+            property.scalaType.equals(
+               descriptorOf[Editable[String]].beanType)
+      } map {
+         property: PropertyDescriptor =>
+            "#application-%s [onblur]".format(property.name) #>
+               SHtml.onEvent(s => OnBlurApplicationField(app.id, property, s))
+      } reduce {
+         (sel1: CssSel, sel2: CssSel) => sel1 & sel2
+      }
+
    // Return a function that can render the given application.
-   private def RenderApplication(app: Application) =
-      "#application-name [id]" #> "application-name-%s".format(app.id) &
-         "#application-name [value]" #> app.name &
-         "#application-description [value]" #> app.description &
-         "#application-version [value]" #> app.version &
-         "#application-name [onblur]" #> SHtml.onEvent(s => OnBlurApplicationName(app.id, s))
+   private def RenderApplication(app: Application): CssSel =
+      IDSelectors(app) & ValueSelectors(app) & OnBlurSelectors(app)
 
    // Render each application in the given feed.
    private def RenderApplications(feed: Box[Feed]): Seq[NodeSeq] =

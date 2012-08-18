@@ -3,7 +3,6 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 
-  
   <modelVersion>4.0.0</modelVersion>
   <groupId>VMware</groupId>
   <artifactId>Feedr</artifactId>
@@ -48,6 +47,11 @@
       <groupId>net.liftweb</groupId>
       <artifactId>lift-mapper_2.9.1</artifactId>
       <version>2.4-M5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.scalastuff</groupId>
+      <artifactId>scalabeans</artifactId>
+      <version>0.3</version>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>

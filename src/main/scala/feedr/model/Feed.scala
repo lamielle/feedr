@@ -2,16 +2,18 @@ package feedr.model
 
 import java.util.UUID.randomUUID
 
-case class Feed(id: String, applications: List[Application] = List[Application]())
+case class Feed(id: String,
+                applications: List[Application] = List[Application]())
 
-object Application {
-   def createApplication =
-      Application(randomUUID().toString, "", "", "")
-   def createApplication(name: String, version: String, description: String) =
-      Application(randomUUID().toString, name, version, description)
+case class Application(name: Editable[String],
+                       version: Editable[String] = Editable(""),
+                       description: Editable[String] = Editable("")) {
+   private var _id = randomUUID().toString
+   def id = _id
 }
 
-case class Application(id: String,
-                       name: String,
-                       version: String,
-                       description: String)
+case class Editable[T](value: T)
+
+object Helpers {
+   implicit def editableString(str: String) = Editable[String](str)
+}

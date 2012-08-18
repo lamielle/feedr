@@ -9,10 +9,6 @@
         <webroots>
           <root url="file://$MODULE_DIR$/src/main/webapp" relative="/" />
         </webroots>
-        <sourceRoots>
-          <root url="file://$MODULE_DIR$/src/main/scala" />
-          <root url="file://$MODULE_DIR$/src/main/resources" />
-        </sourceRoots>
       </configuration>
     </facet>
     <facet type="scala" name="Scala">
@@ -58,6 +54,8 @@
     <orderEntry type="library" name="Maven: net.liftweb:lift-proto_2.9.1:2.4-M5" level="project" />
     <orderEntry type="library" name="Maven: net.liftweb:lift-webkit_2.9.1:2.4-M5" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
+    <orderEntry type="library" name="Maven: org.scalastuff:scalabeans:0.3" level="project" />
+    <orderEntry type="library" name="Maven: com.google.guava:guava:r09" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:0.9.26" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:0.9.26" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />

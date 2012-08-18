@@ -4,6 +4,7 @@ import net.liftweb.actor.LiftActor
 import net.liftweb.common.{Empty, Full, Logger}
 
 import feedr.model.{Application, Feed}
+import feedr.model.Helpers._
 
 // Singleton actor responsible for creating new feeds and feed managers
 object FeedsManager extends LiftActor with Logger {
@@ -35,8 +36,7 @@ object FeedsManager extends LiftActor with Logger {
       val feedId = nextUniqueFeedId()
       // XXX: Use a few hardcoded feeds/applications for now until editing is done
       val feed = Feed(feedId,
-         Application.createApplication("App1", "1.0", "blargh desc") ::
-         Application.createApplication("App1", "2.0", "boom") :: Nil)
+         Application("App1", "1.0", "blargh desc") :: Application("App1", "2.0", "boom") :: Nil)
       feedManagers += feedId -> new FeedManager(feed)
       debug("Added new feed: %s".format(feedId))
       feedId
