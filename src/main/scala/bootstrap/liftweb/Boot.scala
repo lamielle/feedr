@@ -1,10 +1,15 @@
 package bootstrap.liftweb
 
-import _root_.net.liftweb.util._
-import _root_.net.liftweb.common._
-import _root_.net.liftweb.http._
-import _root_.net.liftweb.http.provider._
-import _root_.net.liftweb.mapper.{DB, DefaultConnectionIdentifier, StandardDBVendor}
+import java.sql.DriverManager
+
+import net.liftweb.util._
+import net.liftweb.common._
+import net.liftweb.http._
+import net.liftweb.http.provider._
+import net.liftweb.squerylrecord.SquerylRecord
+
+import org.squeryl.Session
+import org.squeryl.adapters.PostgreSqlAdapter
 
 /**
  * A class that's instantiated early and run.  It allows the application
@@ -12,30 +17,29 @@ import _root_.net.liftweb.mapper.{DB, DefaultConnectionIdentifier, StandardDBVen
  */
 class Boot {
    def boot() {
-      if (!DB.jndiJdbcConnAvailable_?) {
-         val vendor =
-            new StandardDBVendor(Props.get("db.driver") openOr "org.h2.Driver",
-               Props.get("db.url") openOr
-                  "jdbc:h2:lift_proto.db;AUTO_SERVER=TRUE",
-               Props.get("db.user"), Props.get("db.password"))
+      // Load the DB config properties
+      val dbDriver = Props.get("db.driver") openOr "No DB driver available!"
+      val dbUrl = Props.get("db.url") openOr "No DB url available!"
+      val dbUser = Props.get("db.user") openOr "No DB user available!"
+      val dbPassword = Props.get("db.password") openOr "No DB password available!"
 
-         LiftRules.unloadHooks.append(vendor.closeAllConnections_! _)
+      // Set up the Squeryl session factory so a new Postgres connection is made for every connection.
+      // Use a connection pool like c3p0 if this becomes a performance issue.
+      // TODO: Look at using Lift's session management again.  Couldn't get it working, but it isn't the
+      // recommended method in the docs, so maybe it's supported?
+      Class.forName(dbDriver)
+      SquerylRecord.initWithSquerylSession(Session.create(
+            DriverManager.getConnection(dbUrl, dbUser, dbPassword),
+            new PostgreSqlAdapter))
 
-         DB.defineConnectionManager(DefaultConnectionIdentifier, vendor)
-      }
-
-      // where to search snippet
+      // Where to search for snippets.
       LiftRules.addToPackages("feedr")
 
-      /*
-      * Show the spinny image when an Ajax call starts
-      */
+      // Show the spinny image when an Ajax call starts
       LiftRules.ajaxStart =
          Full(() => LiftRules.jsArtifacts.show("ajax-loader").cmd)
 
-      /*
-      * Make the spinny image go away when it ends
-      */
+      // Make the spinny image go away when it ends
       LiftRules.ajaxEnd =
          Full(() => LiftRules.jsArtifacts.hide("ajax-loader").cmd)
 
@@ -62,13 +66,9 @@ class Boot {
                )
             }
       })
-
-      S.addAround(DB.buildLoanWrapper())
    }
 
-   /**
-    * Force the request to be UTF-8
-    */
+   // Force the request to be UTF-8
    private def makeUtf8(req: HTTPRequest) {
       req.setCharacterEncoding("UTF-8")
    }

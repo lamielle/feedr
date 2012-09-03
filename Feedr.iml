@@ -33,29 +33,34 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-mapper_2.9.1:2.4-M5" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-mapper_2.9.1:2.4" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: com.h2database:h2:1.2.138" level="project" />
     <orderEntry type="library" scope="RUNTIME" name="Maven: org.apache.derby:derby:10.7.1.1" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-db_2.9.1:2.4-M5" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-util_2.9.1:2.4-M5" level="project" />
-    <orderEntry type="library" name="Maven: javax.mail:mail:1.4.4" level="project" />
-    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-db_2.9.1:2.4" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-util_2.9.1:2.4" level="project" />
     <orderEntry type="library" name="Maven: commons-codec:commons-codec:1.4" level="project" />
     <orderEntry type="library" name="Maven: nu.validator.htmlparser:htmlparser:1.2.1" level="project" />
+    <orderEntry type="library" name="Maven: javax.mail:mail:1.4.4" level="project" />
+    <orderEntry type="library" name="Maven: javax.activation:activation:1.1" level="project" />
     <orderEntry type="library" name="Maven: joda-time:joda-time:1.6.2" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-actor_2.9.1:2.4-M5" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-common_2.9.1:2.4-M5" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-actor_2.9.1:2.4" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-common_2.9.1:2.4" level="project" />
     <orderEntry type="library" name="Maven: org.slf4j:slf4j-api:1.6.1" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scala-library:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-json_2.9.1:2.4-M5" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-json_2.9.1:2.4" level="project" />
     <orderEntry type="library" name="Maven: com.thoughtworks.paranamer:paranamer:2.3" level="project" />
     <orderEntry type="library" name="Maven: org.scala-lang:scalap:2.9.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.scala-lang:scala-compiler:2.9.1" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-proto_2.9.1:2.4-M5" level="project" />
-    <orderEntry type="library" name="Maven: net.liftweb:lift-webkit_2.9.1:2.4-M5" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-proto_2.9.1:2.4" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-webkit_2.9.1:2.4" level="project" />
     <orderEntry type="library" name="Maven: commons-fileupload:commons-fileupload:1.2.2" level="project" />
     <orderEntry type="library" name="Maven: org.scalastuff:scalabeans:0.3" level="project" />
     <orderEntry type="library" name="Maven: com.google.guava:guava:r09" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-squeryl-record_2.9.1:2.4" level="project" />
+    <orderEntry type="library" name="Maven: org.squeryl:squeryl_2.9.1:0.9.4" level="project" />
+    <orderEntry type="library" name="Maven: cglib:cglib-nodep:2.2" level="project" />
+    <orderEntry type="library" name="Maven: net.liftweb:lift-record_2.9.1:2.4" level="project" />
+    <orderEntry type="library" name="Maven: postgresql:postgresql:8.4-701.jdbc4" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-classic:0.9.26" level="project" />
     <orderEntry type="library" name="Maven: ch.qos.logback:logback-core:0.9.26" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: javax.servlet:servlet-api:2.5" level="project" />

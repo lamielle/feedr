@@ -1,15 +1,17 @@
 package feedr.lib
 
 import net.liftweb.actor.LiftActor
-import net.liftweb.common.{Full, Logger}
+import net.liftweb.common.{Full, Empty, Logger}
 import net.liftweb.http.ListenerManager
+import net.liftweb.squerylrecord.RecordTypeMode._
 
 import org.scalastuff.scalabeans.Preamble._
 import org.scalastuff.scalabeans.PropertyDescriptor
 
-import feedr.lib.FeedManager.{ApplicationEdited, EditApplication, ApplicationAdded, RequestFeed, NewApplication}
-import feedr.model.{Editable, Application, Feed}
-import feedr.model.Helpers._
+import feedr.lib.FeedManager.NewApplication
+import feedr.lib.FeedManager.RequestFeed
+import feedr.lib.FeedManager.EditApplication
+import feedr.model.{FeedModel, FeedrSchema, Application, Feed}
 
 object FeedManager {
    // Messages a FeedManager instance responds to
@@ -18,8 +20,8 @@ object FeedManager {
    case class EditApplication[T](id: String, property: PropertyDescriptor, value: T)
 
    // Messages listeners of FeedManager instances need to respond to
-   case class ApplicationAdded(application: Application, feed: Feed)
-   case class ApplicationEdited(application: Application, property: PropertyDescriptor, feed: Feed)
+   case class ApplicationAdded(application: Application)
+   case class ApplicationEdited(application: Application, property: PropertyDescriptor)
 }
 
 // Custom builder that copies all fields of the given object
@@ -37,24 +39,34 @@ object FeedrBeanBuilder {
    }
 }
 
-// One FeedManager per feed: manages modifications of the feed it represents
-class FeedManager(private var mFeed: Feed) extends LiftActor with ListenerManager with Logger {
+// One FeedManager per feed: manages modifications of the feed it represents.
+class FeedManager(private var mFeedId: Long) extends LiftActor with ListenerManager with Logger {
    override def lowPriority = {
       case RequestFeed() => {
-         debug("Message received: FeedManager(%s)::RequestFeed()".format(mFeed.id))
-         reply(Full(mFeed))
+         debug("Message received: FeedManager(%s)::RequestFeed()".format(mFeedId))
+         // Query for the feed with id mFeedId and return it as a Feed if available
+         // or return Empty if the feed doesn't exist.
+         transaction {
+            reply(from(FeedrSchema.feeds)(feed =>
+               where(feed.id === mFeedId) select(feed)).headOption match {
+               case Some(feedModel: FeedModel) => Full(Feed(feedModel))
+               case _ => Empty
+            })
+         }
       }
       case NewApplication() => {
-         debug("Message received: FeedManager(%s)::NewApplication()".format(mFeed.id))
-         val newApplication = Application("")
-         mFeed = Feed(mFeed.id, newApplication :: mFeed.applications)
-         updateListeners(ApplicationAdded(newApplication, mFeed))
+         debug("Message received: FeedManager(%s)::NewApplication()".format(mFeedId))
+         //TODO: Reimplement adding new applications.
+         //val newApplication = Application("")
+         //mFeed = Feed(mFeed.id, newApplication :: mFeed.applications)
+         //updateListeners(ApplicationAdded(newApplication, mFeed))
       }
       case EditApplication(id, property, value) => {
-         debug("Message received: FeedManager(%s)::EditApplicationName(%s, %s, %s)".format(mFeed.id, id, property, value))
+         debug("Message received: FeedManager(%s)::EditApplicationName(%s, %s, %s)".format(mFeedId, id, property, value))
          // TODO: Replace linear search through the applications list with
          // something better if needed.
-         val optionApp = mFeed.applications find {app: Application => app.id == id}
+         // TODO: Reimplement application editing.
+         /*val optionApp = mFeed.applications find {app: Application => app.id == id}
          optionApp match {
             case Some(app: Application) => {
                val builder = FeedrBeanBuilder.newBuilder(app)
@@ -68,7 +80,7 @@ class FeedManager(private var mFeed: Feed) extends LiftActor with ListenerManage
                updateListeners(ApplicationEdited(newApp, property, mFeed))
             }
             case _ => debug("No application with id %s found!".format(id))
-         }
+         }*/
       }
    }
 

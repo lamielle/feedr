@@ -1,1 +1,5 @@
 # Properties in this file will be read when running in dev mode
+db.driver = org.postgresql.Driver
+db.url = jdbc:postgresql://localhost:5432/feedr
+db.user = feedr
+db.password = feedr
