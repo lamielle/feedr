@@ -8,13 +8,12 @@ import net.liftweb.squerylrecord.RecordTypeMode._
 import org.scalastuff.scalabeans.Preamble._
 import org.scalastuff.scalabeans.PropertyDescriptor
 
-import feedr.lib.FeedManager.NewApplication
-import feedr.lib.FeedManager.RequestFeed
-import feedr.lib.FeedManager.EditApplication
+import feedr.lib.FeedManager.{RequestFeedId, NewApplication, RequestFeed, EditApplication}
 import feedr.model.{FeedModel, FeedrSchema, Application, Feed}
 
 object FeedManager {
    // Messages a FeedManager instance responds to
+   case class RequestFeedId()
    case class RequestFeed()
    case class NewApplication()
    case class EditApplication[T](id: String, property: PropertyDescriptor, value: T)
@@ -42,6 +41,10 @@ object FeedrBeanBuilder {
 // One FeedManager per feed: manages modifications of the feed it represents.
 class FeedManager(private var mFeedId: Long) extends LiftActor with ListenerManager with Logger {
    override def lowPriority = {
+      case RequestFeedId() => {
+         debug("Message received: FeedManager(%s)::RequestFeedId()".format(mFeedId))
+         reply(mFeedId)
+      }
       case RequestFeed() => {
          debug("Message received: FeedManager(%s)::RequestFeed()".format(mFeedId))
          // Query for the feed with id mFeedId and return it as a Feed if available
