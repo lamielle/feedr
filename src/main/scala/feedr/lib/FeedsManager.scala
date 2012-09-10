@@ -12,7 +12,7 @@ object FeedsManager extends LiftActor with Logger {
    case class RequestFeedManager(feedId: Long)
    case class ClearFeedManagers()
 
-   private var feedManagers: Map[Long, FeedManager] = Map.empty
+   private var mFeedManagers: Map[Long, FeedManager] = Map.empty
 
    override def messageHandler = {
       case NewFeed() => {
@@ -21,7 +21,7 @@ object FeedsManager extends LiftActor with Logger {
       }
       case RequestFeedManager(feedId) => {
          debug("Message received: FeedsManager::RequestFeedManager(%s)".format(feedId))
-         reply(feedManagers get feedId map(Full(_)) openOr Empty)
+         reply(mFeedManagers get feedId map(Full(_)) openOr Empty)
       }
       case ClearFeedManagers() => {
          debug("Message received: FeedsManager::ClearFeedManagers()")
@@ -37,7 +37,7 @@ object FeedsManager extends LiftActor with Logger {
    // what was created.
    private def newFeed() = {
       val feedId = createFeed()
-      feedManagers += feedId -> new FeedManager(feedId)
+      mFeedManagers += feedId -> new FeedManager(feedId)
       debug("Added new feed: %s".format(feedId))
       feedId
    }
@@ -51,6 +51,6 @@ object FeedsManager extends LiftActor with Logger {
 
    // Clear out the map of all known feed managers.
    private def clearFeedManagers() {
-      feedManagers = Map.empty
+      mFeedManagers = Map.empty
    }
 }
