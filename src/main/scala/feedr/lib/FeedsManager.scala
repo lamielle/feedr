@@ -10,6 +10,7 @@ import feedr.model.{FeedModel, FeedrSchema}
 object FeedsManager extends LiftActor with Logger {
    case class NewFeed()
    case class RequestFeedManager(feedId: Long)
+   case class ClearFeedManagers()
 
    private var feedManagers: Map[Long, FeedManager] = Map.empty
 
@@ -21,6 +22,10 @@ object FeedsManager extends LiftActor with Logger {
       case RequestFeedManager(feedId) => {
          debug("Message received: FeedsManager::RequestFeedManager(%s)".format(feedId))
          reply(feedManagers get feedId map(Full(_)) openOr Empty)
+      }
+      case ClearFeedManagers() => {
+         debug("Message received: FeedsManager::ClearFeedManagers()")
+         reply(clearFeedManagers())
       }
       case error => {
          debug("Message received: FeedsManager: Unknown message type: %s".format(error))
@@ -42,5 +47,10 @@ object FeedsManager extends LiftActor with Logger {
       transaction {
          FeedrSchema.feeds.insert(FeedModel.createRecord).id
       }
+   }
+
+   // Clear out the map of all known feed managers.
+   private def clearFeedManagers() {
+      feedManagers = Map.empty
    }
 }
